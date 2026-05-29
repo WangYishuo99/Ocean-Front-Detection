@@ -2,14 +2,16 @@
 Author: Yishuo Wang
 Date: 2024-10-19 01:00:23
 LastEditors: Yishuo Wang
-LastEditTime: 2025-12-20 16:20:14
-FilePath: /paper_detection/methods/GBM/numpy2nc.py
+LastEditTime: 2026-05-29 11:33:20
+FilePath: /GBM/numpy2nc.py
 Description: the function to convert numpy array to netCDF file and save them
 
 Copyright (c) 2024 by Yishuo Wang, All Rights Reserved. 
 '''
 import netCDF4 as nc
 import os 
+import geojson
+import numpy as np
 
 def convert(sst_data, gradient_data, output_path, name, lon, lat, sst_name, gradient_name):
     # create the netCDF file with dimension of lon and lat
@@ -52,3 +54,27 @@ def convert_feature(front_zone, front_matrix, strength, width, length, output_pa
     width_var[:] = width
     length_var[:] = length
     f.close()   
+
+def to_builtin_type(obj):
+    if isinstance(obj, dict):
+        return {k: to_builtin_type(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [to_builtin_type(i) for i in obj]
+    elif isinstance(obj, np.generic):
+        return obj.item()
+    else:
+        return obj
+    
+def convert_geojson(fronts, output_path, name, lat, lon):
+    features = []
+    for front in fronts:
+        coordinates = []
+        for point in front:
+            coordinates.append((lon[point[1]], lat[point[0]]))
+        feature = geojson.Feature(geometry=geojson.LineString(coordinates))
+        features.append(feature)
+    feature_collection = geojson.FeatureCollection(features)
+    feature_collection = to_builtin_type(feature_collection)
+    file_name = os.path.join(output_path, f'{name}.geojson')
+    with open(file_name, 'w') as f:
+        geojson.dump(feature_collection, f)

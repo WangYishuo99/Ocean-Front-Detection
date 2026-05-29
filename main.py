@@ -2,8 +2,8 @@
 Author: Yishuo Wang
 Date: 2024-07-29 14:13:37
 LastEditors: Yishuo Wang
-LastEditTime: 2025-12-20 16:11:30
-FilePath: /paper_detection/methods/GBM/main.py
+LastEditTime: 2026-05-29 11:32:16
+FilePath: /GBM/main.py
 Description: the main function for merge the results
 
 Copyright (c) 2024 by Yishuo Wang, All Rights Reserved. 
@@ -16,8 +16,10 @@ import gc
 
 start_time = '20250101'
 end_time = '20250106'
+
 input = './data'
 output = './output_test'
+
 types = ['SST', 'SSS']
 start_lons = [100, 120]
 end_lons = [125, 145]
@@ -39,7 +41,7 @@ if __name__ == '__main__':
             # 启动 Ray（自动使用所有 CPU）
             ray.init()
 
-            analysisType = 'phy'
+            analysisType = 'GBM'
             
             # 构建输入参数列表
             tasks = []

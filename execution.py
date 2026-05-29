@@ -2,14 +2,13 @@
 Author: Yishuo Wang
 Date: 2024-10-21 11:55:33
 LastEditors: Yishuo Wang
-LastEditTime: 2025-12-20 17:13:07
-FilePath: /paper_detection/methods/GBM/execution.py
+LastEditTime: 2026-05-29 11:34:42
+FilePath: /GBM/execution.py
 Description: the outer function for the whole process
 
 Copyright (c) 2024 by Yishuo Wang, All Rights Reserved. 
 '''
 import gradient_front_zone
-import pickle
 import numpy2nc as n2nc
 import zone2line as z2l
 import length_width_strength_calculation as lwsc
@@ -60,11 +59,9 @@ def whole_function(date, analysisType, input, output, beginLon, endLon, beginLat
     n2nc.convert_feature(marked_matrix, front_matrix, strength, width, length, output_nc_path, date, lon_extracted, lat_extracted)
 
     # 6.将锋面写入矢量文件
-    output_pkl_path = os.path.join(output, region_name, analysisType, type_now, 'vector', 'pkl')
-    os.makedirs(output_pkl_path, exist_ok = True)
-    output_pkl_name = os.path.join(output_pkl_path, f'{date}.pkl')
-    with open(output_pkl_name, 'wb') as f:
-        pickle.dump(fronts, f)
+    output_json_path = os.path.join(output, region_name, analysisType, type_now, 'vector', 'json')
+    os.makedirs(output_json_path, exist_ok = True)
+    n2nc.convert_geojson(fronts, output_json_path, date, lat_extracted, lon_extracted)
         
     # 主动释放大数组内存
     gc.collect()
